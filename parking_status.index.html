@@ -47,11 +47,22 @@
             font-weight: bold;
             margin-top: 20px;
         }
+        .debug-box {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 20px auto;
+            width: 80%;
+            text-align: left;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
     <h1>סטטוס חניה</h1>
     <div id="errorMessage" class="error-msg"></div>
+    <div id="debugOutput" class="debug-box"></div>
     <table id="parkingTable">
         <thead>
             <tr>
@@ -64,11 +75,13 @@
         <tbody></tbody>
     </table>
     <a href="YOUR_FORM_LINK_HERE" class="update-btn">עדכון חניה</a>
-
+    <br>
+    <iframe src="https://sites.google.com/view/herzel73parking/home" width="100%" height="600px" style="border:none;"></iframe>
+    
     <script>
         async function loadParkingData() {
-            const sheetId = "1PxfaKBCzi-qPdNTPHt30SOYwF2beIhqPvrUuXaNkYtk"; // מזהה הגיליון בלבד
-            const apiKey = "AIzaSyDcX5CW5nfaIRkfVb56ow_p45GmvMkdMBE"; // מפתח API תקף
+            const sheetId = "1PxfaKBCzi-qPdNTPHt30SOYwF2beIhqPvrUuXaNkYtk";
+            const apiKey = "AIzaSyDcX5CW5nfaIRkfVb56ow_p45GmvMkdMBE";
             const range = "Parking Status!A2:D";
             const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
 
@@ -78,6 +91,8 @@
                 const data = await response.json();
                 if (!data.values) throw new Error("⚠️ אין נתונים בגיליון או שאין הרשאה לצפייה!");
 
+                document.getElementById("debugOutput").innerText = "📌 נתונים שהתקבלו מה-API:\n" + JSON.stringify(data, null, 2);
+                
                 const tableBody = document.querySelector("#parkingTable tbody");
                 tableBody.innerHTML = "";
 
@@ -93,8 +108,8 @@
                 });
                 document.getElementById("errorMessage").innerHTML = "";
             } catch (error) {
-                console.error("Error fetching data", error);
                 document.getElementById("errorMessage").innerHTML = `⚠️ שגיאה: ${error.message}`;
+                document.getElementById("debugOutput").innerText = "❌ שגיאה בטעינת הנתונים:\n" + error.message;
                 document.querySelector("#parkingTable tbody").innerHTML = "<tr><td colspan='4'>❌ שגיאה בטעינת הנתונים.</td></tr>";
             }
         }
