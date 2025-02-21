@@ -57,12 +57,12 @@
         </thead>
         <tbody></tbody>
     </table>
-    <a href="[FORM_LINK_HERE]" class="update-btn">עדכון חניה</a>
+    <a href="YOUR_FORM_LINK_HERE" class="update-btn">עדכון חניה</a>
 
     <script>
         async function loadParkingData() {
-            const sheetId = "1PxfaKBCzi-qPdNTPHt30SOYwF2beIhqPvrUuXaNkYtk";
-            const apiKey = "AIzaSyDcX5CW5nfaIRkfVb56ow_p45GmvMkdMBE";
+            const sheetId = "1PxfaKBCzi-qPdNTPHt30SOYwF2beIhqPvrUuXaNkYtk"; // מזהה הגיליון בלבד
+            const apiKey = "AIzaSyDcX5CW5nfaIRkfVb56ow_p45GmvMkdMBE"; // מפתח API תקף
             const range = "Parking Status!A2:D";
             const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
 
@@ -70,7 +70,7 @@
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const data = await response.json();
-                if (!data.values) throw new Error("No data found in the sheet.");
+                if (!data.values) throw new Error("No data found in the sheet. ודא שההרשאות נכונות!");
 
                 const tableBody = document.querySelector("#parkingTable tbody");
                 tableBody.innerHTML = "";
@@ -87,7 +87,7 @@
                 });
             } catch (error) {
                 console.error("Error fetching data", error);
-                document.querySelector("#parkingTable tbody").innerHTML = `<tr><td colspan="4">שגיאה בטעינת הנתונים</td></tr>`;
+                document.querySelector("#parkingTable tbody").innerHTML = `<tr><td colspan="4">⚠️ שגיאה בטעינת הנתונים. ודא שהגיליון ציבורי ושה-API Key תקין.</td></tr>`;
             }
         }
         
