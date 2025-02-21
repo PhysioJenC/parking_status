@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סטטוס חניה</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
+        h1 { color: #4CAF50; }
+        table { width: 80%; margin: auto; border-collapse: collapse; background: white; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: #4CAF50; color: white; }
+        .status-pnui { background-color: #77DD77; }
+        .status-tafus { background-color: #FF6961; }
+        .update-btn { display: block; margin: 20px auto; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; font-size: 18px; cursor: pointer; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>סטטוס חניה</h1>
+    <table id="parkingTable">
+        <thead>
+            <tr>
+                <th>מספר חניה</th>
+                <th>סטטוס</th>
+                <th>שם העובד</th>
+                <th>זמן עדכון</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <a href="[FORM_LINK_HERE]" class="update-btn">עדכון חניה</a>
+
+    <script>
+        async function loadParkingData() {
+            const sheetId = "YOUR_GOOGLE_SHEET_ID";
+            const apiKey = "YOUR_GOOGLE_API_KEY";
+            const range = "Parking Status!A2:D";
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const data = await response.json();
+                if (!data.values) throw new Error("No data found in the sheet.");
+
+                const tableBody = document.querySelector("#parkingTable tbody");
+                tableBody.innerHTML = "";
+
+                data.values.forEach(row => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${row[0] || "N/A"}</td>
+                        <td class="${row[1] === "תפוס" ? "status-tafus" : "status-pnui"}">${row[1] || "N/A"}</td>
+                        <td>${row[2] || "-"}</td>
+                        <td>${row[3] || "N/A"}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Error fetching data", error);
+                document.querySelector("#parkingTable tbody").innerHTML = `<tr><td colspan="4">שגיאה בטעינת הנתונים</td></tr>`;
+            }
+        }
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            loadParkingData();
+            setInterval(loadParkingData, 30000); // רענון כל 30 שניות
+        });
+    </script>
+</body>
+</html>
